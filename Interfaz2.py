@@ -3,7 +3,7 @@ import streamlit as st
 #Informacion general sobre Eyringpy
 st.image("logoe.jpg")
 st.write("## *What is `Eyringpy`?*")
-st.write("`Eyringpy` is a program for computing rate constants using the " 
+intro = st.write("`Eyringpy` is a program for computing rate constants using the " 
          "transition state theory (TST), in the gas phase and in solution."
          "The Gibbs activation energy is obtained by computing from scratch"
          " the canonical partition functions. Unimolecular and bimolecular"
@@ -20,36 +20,84 @@ st.write("`Eyringpy` is a program for computing rate constants using the "
 #Apartado para ejecutar test
 def kinetics():
     st.write("## Welcome to **Kinetics test**")
-    st.write("Please select the appropiate parameters for your test.")
     
-    phase = st.radio("Phase", options=("Gas","Solution"))
+    st.write("Please upload the files for your test.")
     
-    if phase == "Gas":
-        st.selectbox("Method", options = ("Transition State Theory","CVT"))
-        st.selectbox("Tunnel", options = ("WIG","ECK"))
+    col1, col2 = st.columns(2)
+
+    with col1:
+        React1 = st.file_uploader("**Reactant 1 (required)**", type=["out"])
+        Prod1 = st.file_uploader("**Product 1 (required)**", type=["out"])
+        TS = st.file_uploader("**Transition State (required)**", type=["out"])
+        React2 = st.file_uploader("*Reactant 2*", type=["out"])
+        Prod2 = st.file_uploader("*Product 2*", type=["out"])
+        IRC = st.file_uploader("**IRC (required)**", type=["out"])
         
-        col1, col2 = st.columns(2)
+    with col2:
+        React1_SP = st.file_uploader("*Reactant 1 - Single point*", type=["out"])
+        Prod1_SP = st.file_uploader("*Product 1 - Single point*", type=["out"])
+        TS_SP = st.file_uploader("*Transition State - Single point*", type=["out"])
+        React2_SP = st.file_uploader("*Reactant 2 - Single point*", type=["out"])
+        Prod2_SP = st.file_uploader("*Product 2 - Single point*", type=["out"])
+    
+    if not React1 or not Prod1 or not TS or not IRC:
+        st.warning("Please upload all required files to continue.")
+    else:
+        st.success("All required files have been uploaded!")
         
-        with col1:
-            st.write("Temperature as a range.")
-            st.write("*If you want to enter your"
-                          " temperature as an intervale.*")
-            intemp = st.number_input("Initial temperature", min_value=0.00, step=0.01)
-            fintemp = st.number_input("Final temperature", min_value=0.00, step=0.01)
-            step = st.number_input("Step size", min_value = 0, max_value = 1000, step = 1)
+        st.write("Please select the appropiate parameters for your test.")
         
-        with col2:
-            st.write("Temperature as a list.")
-            st.write("*If you want to enter your"
-                          " temperature as list of values.*")
-            st.text_input("List of temperatures")
+        phase = st.radio("Phase", options=("Gas","Solution"))
+        
+        if phase == "Gas":
+            st.selectbox("Method", options = ("Transition state theory","Chemical vapor transport"))
+            st.selectbox("Tunnel", options = ("Wigner","Eckart"))
+            
+            temp_inp = st.selectbox("Select the way you want to enter your"
+                                " temperature values.", options = ("Range", "List"))
+            
+            if temp_inp == "Range":
+                st.write("Temperature as a range.")
+                intemp = st.number_input("Initial temperature", min_value = 0.0000000000, step=0.0000000001, format="%0.10f")
+                fintemp = st.number_input("Final temperature", min_value = 0.0000000000, step=0.0000000001, format="%0.10f")
+                
+                if fintemp <= intemp:
+                    st.error("The final temperature must be greater than the initial temperature.")
+                else:
+                    step = st.number_input("Step size", min_value = 0.0000000000, step=0.0000000001, format="%0.10f")
+                    
+                    inter_range = fintemp - intemp
+                    if step == 0:
+                        st.error("The step size must be non-zero.")
+                    elif inter_range % step != 0:
+                        st.error("The step size is not consistent with the"
+                                 " temperature range. It must evenly divide the intervale.")
+                    else:
+                        pass
+                    
+            else:
+                st.write("Temperature as a list.")
+                num_temp = st.number_input("Number of temperature values"
+                                           " that you will enter:", min_value=1, step=1,)
+                if num_temp:
+                    st.write("Enter the temperature values:")
+                    cols = st.columns(4)
+                    temp_list = []
+                    
+                    for i in range(num_temp):
+                        col = cols[i % 4]  # Seleccionar la columna de manera cíclica
+                        temp_value = col.number_input(f"Temperature {i+1}", min_value=0.0000000000,
+                                                      step=0.0000000001, format="%0.10f")
+                        temp_list.append(temp_value)
+                                         
+                    
 def IRC():
     st.write("## Welcome to **IRC test**")
 
 st.markdown("---")
 st.write("# Run your test")
 test = st.radio("What type of test do you want to run?", options=("IRC", "Kinetics"))
-
+    
 if test=="IRC":
     IRC()
 else:
