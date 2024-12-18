@@ -26,19 +26,19 @@ def kinetics():
     col1, col2 = st.columns(2)
 
     with col1:
-        React1 = st.file_uploader("**Reactant 1 (required)**", type=["out"])
-        Prod1 = st.file_uploader("**Product 1 (required)**", type=["out"])
-        TS = st.file_uploader("**Transition State (required)**", type=["out"])
-        React2 = st.file_uploader("*Reactant 2*", type=["out"])
-        Prod2 = st.file_uploader("*Product 2*", type=["out"])
+        React1 = st.file_uploader("**REACT1 (required)**", type=["out"])
+        Prod1 = st.file_uploader("**PROD1 (required)**", type=["out"])
+        TS = st.file_uploader("**TS (required)**", type=["out"])
+        React2 = st.file_uploader("*REACT2*", type=["out"])
+        Prod2 = st.file_uploader("*PROD2*", type=["out"])
         IRC = st.file_uploader("**IRC (required)**", type=["out"])
         
     with col2:
-        React1_SP = st.file_uploader("*Reactant 1 - Single point*", type=["out"])
-        Prod1_SP = st.file_uploader("*Product 1 - Single point*", type=["out"])
-        TS_SP = st.file_uploader("*Transition State - Single point*", type=["out"])
-        React2_SP = st.file_uploader("*Reactant 2 - Single point*", type=["out"])
-        Prod2_SP = st.file_uploader("*Product 2 - Single point*", type=["out"])
+        React1_SP = st.file_uploader("*REACT1 - Single point*", type=["out"])
+        Prod1_SP = st.file_uploader("*PROD1 - Single point*", type=["out"])
+        TS_SP = st.file_uploader("*TS - Single point*", type=["out"])
+        React2_SP = st.file_uploader("*REACT2 - Single point*", type=["out"])
+        Prod2_SP = st.file_uploader("*PROD2 - Single point*", type=["out"])
     
     if not React1 or not Prod1 or not TS or not IRC:
         st.warning("Please upload all required files to continue.")
@@ -50,8 +50,8 @@ def kinetics():
         phase = st.radio("Phase", options=("Gas","Solution"))
         
         if phase == "Gas":
-            st.selectbox("Method", options = ("Transition state theory","Chemical vapor transport"))
-            st.selectbox("Tunnel", options = ("Wigner","Eckart"))
+            st.selectbox("Method", options = ("TST","CVT"))
+            st.selectbox("Tunnel", options = ("WIG","ECK"))
             
             temp_inp = st.selectbox("Select the way you want to enter your"
                                 " temperature values.", options = ("Range", "List"))
